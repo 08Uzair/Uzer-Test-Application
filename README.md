@@ -1,6 +1,6 @@
-# 📝 Test/Quiz Maker Application
+#  Test/Quiz Maker Application
 
-## 📌 Overview  
+##  Overview  
 The **Test/Quiz Maker Application** is a powerful and easy-to-use platform for creating and managing quizzes.  
 It supports **three types of questions**:  
 
@@ -11,7 +11,7 @@ It supports **three types of questions**:
 Whether you're building quizzes for education, training, or fun, this app has you covered! 🎯
 
 ---
-📷 Screenshots
+# Screenshots
 
 1.<img width="1896" height="928" alt="image" src="https://github.com/user-attachments/assets/947807cb-de67-4a09-8c71-ed23ed43668c" />
 2.<img width="1918" height="867" alt="image" src="https://github.com/user-attachments/assets/3a4f8012-616d-4bb2-a94d-bbb11cf5ea37" />
@@ -36,7 +36,7 @@ Whether you're building quizzes for education, training, or fun, this app has yo
 
 ---
 
-## 🚀 Features  
+##  Features  
 - ➕ Create multiple types of quiz questions  
 - ✏️ Edit and manage questions easily  
 - 🔒 Secure authentication using JWT  
@@ -46,7 +46,7 @@ Whether you're building quizzes for education, training, or fun, this app has yo
 
 ---
 
-## 🛠 Tech Stack  
+##  Tech Stack  
 **Frontend:**  
 - ⚡ [Vite](https://vitejs.dev/)  
 - 🎨 [Tailwind CSS](https://tailwindcss.com/)  
@@ -63,7 +63,7 @@ Whether you're building quizzes for education, training, or fun, this app has yo
 
 ---
 
-## 📦 Installation & Setup  
+##  Installation & Setup  
 
 ```bash
 # Clone the repository
@@ -84,7 +84,7 @@ npm install
 npm start
 
 
-📄 License
+ License
 This project is licensed under the MIT License – feel free to use and modify it.
 
 💡 Made with ❤️ by Uzair Qureshi
