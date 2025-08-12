@@ -1,0 +1,119 @@
+import React, { useState, useRef } from "react";
+
+function App() {
+  const [sentence] = useState("This is a sample sentence for testing purposes in a long sentence of one hundred words ideally.");
+  const [highlights, setHighlights] = useState([]);
+  const pRef = useRef();
+
+  const handleUnderline = () => {
+    const selection = window.getSelection();
+    const selectedText = selection.toString().trim();
+    if (!selectedText) return;
+
+    const anchorNode = selection.anchorNode;
+    const pNode = pRef.current;
+    if (!pNode.contains(anchorNode)) return;
+
+    const sentenceWords = sentence.split(/\s+/);
+    const selectedWords = selectedText.split(/\s+/);
+
+    // Find first word index in sentence
+    let firstWordIndex = -1;
+    for (let i = 0; i <= sentenceWords.length - selectedWords.length; i++) {
+      if (
+        selectedWords.every((w, idx) => sentenceWords[i + idx] === w)
+      ) {
+        firstWordIndex = i;
+        break;
+      }
+    }
+
+    if (firstWordIndex === -1) return; // Not found in sentence (could be partial overlap)
+
+    // Find char start and end for underline
+    const regex = new RegExp(\\b${selectedText}\\b);
+    const indexInSentence = sentence.indexOf(selectedText);
+    if (indexInSentence === -1) return;
+
+    const newHighlight = {
+      text: selectedText,
+      wordIndex: firstWordIndex,
+      start: indexInSentence,
+      end: indexInSentence + selectedText.length
+    };
+
+    setHighlights((prev) => {
+      const updated = [...prev, newHighlight];
+
+      // Sort by wordIndex, then assign positions
+      const sorted = updated
+        .sort((a, b) => a.wordIndex - b.wordIndex)
+        .map((item, index) => ({
+          ...item,
+          position: index + 1
+        }));
+
+      return sorted;
+    });
+
+    selection.removeAllRanges();
+  };
+
+  const handleUndo = () => {
+    // Remove the last added highlight before sorting
+    setHighlights((prev) => {
+      const removed = [...prev];
+      removed.pop();
+
+      const sorted = removed
+        .sort((a, b) => a.wordIndex - b.wordIndex)
+        .map((item, index) => ({
+          ...item,
+          position: index + 1
+        }));
+
+      return sorted;
+    });
+  };
+
+  const renderWithHighlights = () => {
+    if (highlights.length === 0) return sentence;
+
+    const sortedByChar = [...highlights].sort((a, b) => a.start - b.start);
+    let lastIndex = 0;
+    const parts = [];
+
+    sortedByChar.forEach((h, index) => {
+      parts.push(sentence.slice(lastIndex, h.start));
+      parts.push(
+        <span key={index} style={{ textDecoration: "underline", backgroundColor: "#e2f0ff" }}>
+          {sentence.slice(h.start, h.end)}
+        </span>
+      );
+      lastIndex = h.end;
+    });
+
+    parts.push(sentence.slice(lastIndex));
+    return parts;
+  };
+
+  const displayHighlights = highlights.map(({ text, position }) => ({ text, position }));
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial" }}>
+      <p ref={pRef} style={{ fontSize: "18px", lineHeight: "1.6" }}>
+        {renderWithHighlights()}
+      </p>
+
+      <button onClick={handleUnderline}>Underline</button>
+      <button onClick={handleUndo} disabled={highlights.length === 0} style={{ marginLeft: "10px" }}>
+        Undo
+      </button>
+
+      <h4>Highlights:</h4>
+      <pre>{JSON.stringify(displayHighlights, null, 2)}</pre>
+    </div>
+  );
+}
+
+export default App;
