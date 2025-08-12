@@ -32,7 +32,7 @@ Whether you're building quizzes for education, training, or fun, this app has yo
 ## 🌐 Live Demo & Resources  
 - **Live App:** [🔗 Click Here](https://uzerqureshi-test-application.netlify.app)  
 - **Backend API:** [🔗 Click Here](https://test-app-server-pcz9.onrender.com)  
-- **Video Demo:** [🔗 Coming Soon / Add Link Here](...)  
+- **Video Demo:** [🔗 Click Here](https://youtu.be/WuXrImGofKg)  
 
 ---
 
@@ -67,7 +67,7 @@ Whether you're building quizzes for education, training, or fun, this app has yo
 
 ```bash
 # Clone the repository
-git clone <repo-link>
+git clone 'https://github.com/08Uzair/Uzer-Test-Application.git'
 
 # Install dependencies for frontend
 cd frontend
