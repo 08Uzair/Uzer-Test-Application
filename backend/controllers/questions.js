@@ -3,19 +3,19 @@ import { clozeQuestion } from "../models/clozeQuestions.js";
 import { passageQuestion } from "../models/passageQuestions.js";
 
 export const getAllQuestionsByUser = async (req, res) => {
-  const { userId } = req.params;
+  const { parentId } = req.params;
 
   try {
     // Fetch all question types for the given user
-    const categoryQuestions = await categoryQuestion.find({ userId });
-    const clozeQuestions = await clozeQuestion.find({ userId });
-    const passageQuestions = await passageQuestion.find({ userId });
+    const categoryQuestions = await categoryQuestion.find({ parentId });
+    const clozeQuestions = await clozeQuestion.find({ parentId });
+    const passageQuestions = await passageQuestion.find({ parentId });
 
     res.status(200).json({
-      userId,
+      parentId,
       categoryQuestions,
       clozeQuestions,
-      passageQuestions
+      passageQuestions,
     });
   } catch (error) {
     console.error(error);

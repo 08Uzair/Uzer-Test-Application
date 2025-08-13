@@ -6,6 +6,9 @@ export const authSignIn = (newUser) => async (dispatch) => {
     const { data } = await api.signIn(newUser);
     dispatch({ type: AUTH, payload: data });
     toast.success("Login Sucessfully ");
+    setTimeout(() => {
+      window.location.reload();
+    }, [3000]);
   } catch (error) {
     console.log(error);
   }
@@ -16,6 +19,7 @@ export const authSignUp = (newUser) => async (dispatch) => {
     const { data } = await api.signUp(newUser);
     dispatch({ type: AUTH, payload: data });
     toast.success("Register Sucessfully");
+    window.location.reload();
   } catch (error) {
     console.log(error);
   }

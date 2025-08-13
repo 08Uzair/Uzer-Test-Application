@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { createCategoryQuestion } from "../redux/actions/categoryQuestion";
 import useLocalStorage from "../../utility/useLocalStorage";
+import { toast } from "react-toastify";
 export default function CategoryQuestion({ parentId }) {
-  console.log(parentId, "This is the Child Parent ID");
+  // console.log(parentId, "This is the Child Parent ID");
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
   const emptyQuestion = {
     question: "",
     description: "",
@@ -16,7 +18,7 @@ export default function CategoryQuestion({ parentId }) {
     points: 0, // added points here
   };
   const [profile] = useLocalStorage("profile", null);
-  console.log(profile?.result?._id);
+  // console.log(profile?.result?._id);
   const [questions, setQuestions] = useState([
     JSON.parse(JSON.stringify(emptyQuestion)),
   ]);
@@ -73,6 +75,7 @@ export default function CategoryQuestion({ parentId }) {
 
   // Save handler for each question
   const handleSaveQuestion = async (qIndex) => {
+    setLoading(true);
     const q = questions[qIndex];
     const dataToSave = {
       userID: profile?.result?._id,
@@ -87,11 +90,13 @@ export default function CategoryQuestion({ parentId }) {
     };
     try {
       await dispatch(createCategoryQuestion(dataToSave));
+      setLoading(false);
+      toast.success("Question Added Successfully");
     } catch (error) {
       console.log(error);
     }
     setSavedData(dataToSave);
-    console.log("Saved Data:", dataToSave);
+    // console.log("Saved Data:", dataToSave);
   };
 
   return (
@@ -110,13 +115,15 @@ export default function CategoryQuestion({ parentId }) {
               <div className="flex gap-3">
                 <button
                   onClick={() => handleSaveQuestion(qIndex)}
-                  className="bg-blue-600 hover:bg-blue-700 transition-all duration-300 text-white px-5 py-2 rounded-lg shadow-md cursor-pointer"
+                  className="px-5 py-2 border border-blue-500 text-blue-500 rounded-md shadow hover:bg-blue-50 transition-all cursor-pointer"
                 >
-                  Save
+                  {loading ? (
+                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <>Save Category Question No {qIndex + 1}</>
+                  )}
                 </button>
-                <button className="cursor-pointer border border-blue-600 text-blue-600 hover:bg-blue-50 transition-all duration-300 px-5 py-2 rounded-lg shadow-md cursor-pointer">
-                  Save & Proceed
-                </button>
+
                 {questions.length > 1 && (
                   <button
                     onClick={() => handleDeleteQuestion(qIndex)}
@@ -151,32 +158,34 @@ export default function CategoryQuestion({ parentId }) {
               />
             </div>
 
-            {/* Points input */}
-            <div className="mb-6">
-              <input
-                type="number"
-                placeholder="Points"
-                value={questionData.points || ""}
-                onChange={(e) =>
-                  updateQuestionField(qIndex, "points", e.target.value)
+            <div className="w-full flex  justify-between">
+              {/* Categories Section */}
+              <CategorySection
+                categories={
+                  Array.isArray(questionData.categories)
+                    ? questionData.categories
+                    : []
                 }
-                className="w-[100px] text-center border border-gray-300 rounded-lg shadow-sm px-3 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-300 transition-all duration-300"
+                setCategories={(newCats) => updateCategories(qIndex, newCats)}
+                items={
+                  Array.isArray(questionData.items) ? questionData.items : []
+                }
+                setItems={(newItems) => updateItems(qIndex, newItems)}
               />
+              {/* Points input */}
+              <div className="mb-6">
+                <input
+                  type="number"
+                  placeholder="Points"
+                  min="0"
+                  value={questionData.points || ""}
+                  onChange={(e) =>
+                    updateQuestionField(qIndex, "points", e.target.value)
+                  }
+                  className="w-[100px] h-[50px] text-center border border-gray-300 rounded-lg shadow-sm px-3 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-300 transition-all duration-300"
+                />
+              </div>
             </div>
-
-            {/* Categories Section */}
-            <CategorySection
-              categories={
-                Array.isArray(questionData.categories)
-                  ? questionData.categories
-                  : []
-              }
-              setCategories={(newCats) => updateCategories(qIndex, newCats)}
-              items={
-                Array.isArray(questionData.items) ? questionData.items : []
-              }
-              setItems={(newItems) => updateItems(qIndex, newItems)}
-            />
           </div>
         ))}
 

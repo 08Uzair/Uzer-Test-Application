@@ -1,13 +1,27 @@
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { uploadImageToCloudinary } from "../../utility/uploadToCloudinary";
 import { useDispatch } from "react-redux";
 import { authSignIn, authSignUp } from "../redux/actions/auth";
+
+const btnStages = [
+  "Logging in...",
+  "Just 5 sec",
+  "You're almost there",
+  "Almost done...",
+  "Verifying credentials...",
+  "Setting things up...",
+  "Securing your account...",
+  "Just a moment more...",
+  "Getting things ready...",
+];
 
 export default function Auth() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [btnStageIndex, setBtnStageIndex] = useState(0);
   const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
@@ -67,21 +81,40 @@ export default function Auth() {
     }
   };
 
+  // Text loader logic
+  useEffect(() => {
+    let timer;
+    if (btnLoading) {
+      timer = setInterval(() => {
+        setBtnStageIndex((prev) => (prev + 1) % btnStages.length);
+      }, 1000);
+    } else {
+      setBtnStageIndex(0);
+    }
+    return () => clearInterval(timer);
+  }, [btnLoading]);
+
   const handleSignIn = async (e) => {
     e.preventDefault();
+    setBtnLoading(true);
     try {
       await dispatch(authSignIn(formData));
     } catch (error) {
       console.error(error);
+    } finally {
+      setBtnLoading(false);
     }
   };
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    setBtnLoading(true);
     try {
       await dispatch(authSignUp(formData));
     } catch (error) {
       console.error(error);
+    } finally {
+      setBtnLoading(false);
     }
   };
 
@@ -170,12 +203,16 @@ export default function Auth() {
 
           <button
             type="submit"
-            disabled={uploading}
+            disabled={uploading || btnLoading}
             className={`w-full bg-gradient-to-r from-[#4a3aff] to-[#7b6cff] text-white py-3 rounded-lg font-medium hover:shadow-lg transition-all duration-300 hover:scale-[1.02] ${
-              uploading ? "opacity-50 cursor-not-allowed" : ""
+              uploading || btnLoading ? "opacity-50 cursor-not-allowed" : ""
             }`}
           >
-            {isSignUp ? "Sign Up" : "Sign In"}
+            {btnLoading
+              ? btnStages[btnStageIndex]
+              : isSignUp
+              ? "Sign Up"
+              : "Sign In"}
           </button>
         </form>
 

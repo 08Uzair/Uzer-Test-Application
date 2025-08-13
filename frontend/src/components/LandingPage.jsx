@@ -1,10 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import useAuthenticated from "../../utility/useAuthenticate";
+import { toast } from "react-toastify";
 export default function LandingPage() {
   const navigate = useNavigate();
-
+  const { isAuthenticated } = useAuthenticated();
+  const handleLogout = () => {
+    localStorage.clear();
+    setTimeout(() => {
+      toast.success("Logout Sucessfully");
+    }, [3000]);
+    window.location.reload();
+  };
   return (
-    <div className=" bg-[#f7f8fc] min-h-screen flex flex-col items-center font-sans">
+    <div className=" bg-[#f7f8fc] min-h-screen flex flex-col items-center font-sans !overflow-hidden">
       {/* Navbar */}
       <nav className="w-full max-w-7xl flex justify-between items-center py-5 px-6">
         <h1 className="text-[#4a3aff] font-extrabold text-2xl tracking-tight">
@@ -25,9 +34,22 @@ export default function LandingPage() {
           </a>
         </div> */}
         <div className="flex gap-3">
-          <button className="border border-gray-300 rounded-full px-5 py-2 hover:bg-gray-100 cursor-pointer">
-            Login
-          </button>
+          {isAuthenticated ? (
+            <button
+              onClick={handleLogout}
+              className="border border-gray-300 rounded-full px-5 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/auth")}
+              className="border border-gray-300 rounded-full px-5 py-2 hover:bg-gray-100 cursor-pointer"
+            >
+              Login
+            </button>
+          )}
+
           <button
             onClick={() => navigate("/dashboard")}
             className="bg-[#4a3aff] text-white rounded-full px-5 py-2 shadow-md hover:shadow-lg transition cursor-pointer"

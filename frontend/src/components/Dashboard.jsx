@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import useLocalStorage from "../../utility/useLocalStorage";
 import { addTest, deleteTest, getTest } from "../redux/actions/test";
+import { toast } from "react-toastify";
 
 export default function Dashboard() {
   const [profile] = useLocalStorage("profile", null);
@@ -11,6 +12,7 @@ export default function Dashboard() {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     userID: profile?.result?._id,
     title: "",
@@ -27,10 +29,13 @@ export default function Dashboard() {
   };
 
   const handleSubmit = async (e) => {
+    setLoading(true);
     e.preventDefault();
     try {
       await dispatch(addTest(formData));
       await dispatch(getTest());
+      setLoading(false);
+      toast.success("Test Added Successfully");
     } catch (error) {
       console.log(error);
     }
@@ -58,16 +63,20 @@ export default function Dashboard() {
     setData((prev) => prev.filter((item) => item._id !== id));
     try {
       await dispatch(deleteTest(id));
+      toast.success("Question Deleted Successfully");
     } catch (error) {
       console.log(error);
     }
   };
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-6 max-w-5xl mx-auto min-h-[88vh]">
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-800 tracking-tight">
+        <h1
+          onClick={() => navigate("/")}
+          className="text-2xl font-bold text-gray-800 tracking-tight cursor-pointer"
+        >
           My Tests
         </h1>
         <div className="relative">
@@ -260,7 +269,11 @@ export default function Dashboard() {
                     type="submit"
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition"
                   >
-                    Create
+                    {loading ? (
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                      <>Create</>
+                    )}
                   </button>
                 </div>
               </form>

@@ -3,6 +3,6 @@ import { getAllQuestionsByUser } from "../controllers/questions.js";
 
 const router = express.Router();
 
-router.get("/:userId", getAllQuestionsByUser);
+router.get("/:parentId", getAllQuestionsByUser);
 
 export default router;

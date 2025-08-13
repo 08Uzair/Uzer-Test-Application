@@ -2,10 +2,13 @@ import React, { useState } from "react";
 import useLocalStorage from "../../utility/useLocalStorage";
 import { useDispatch } from "react-redux";
 import { createPassageQuestion } from "../redux/actions/passageQuestion";
+import { toast } from "react-toastify";
 
 export default function PassageQuestionBuilder({ parentId }) {
   const [profile] = useLocalStorage("profile", null);
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(false);
+
   const [questions, setQuestions] = useState([
     {
       userId: profile?.result?._id,
@@ -99,11 +102,12 @@ export default function PassageQuestionBuilder({ parentId }) {
   };
 
   const handleSave = async (mainIndex) => {
+    setLoading(true);
     const mainQ = questions[mainIndex];
 
     const data = {
       userId: profile?.result?._id,
-       parentId: parentId,
+      parentId: parentId,
       passage: mainQ.passage,
       points: mainQ.points,
       subQuestions: mainQ.subQuestions.map((subQ) => ({
@@ -118,6 +122,8 @@ export default function PassageQuestionBuilder({ parentId }) {
     }));
     try {
       await dispatch(createPassageQuestion(data));
+      setLoading(false);
+      toast.success("Question Added Successfully");
     } catch (error) {
       console.log(error);
     }
@@ -140,13 +146,15 @@ export default function PassageQuestionBuilder({ parentId }) {
               <div className="flex gap-2">
                 <button
                   onClick={() => handleSave(mainIndex)}
-                  className="px-5 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition-all cursor-pointer"
+                  className="px-5 py-2 border border-blue-500 text-blue-500 rounded-md shadow hover:bg-blue-50 transition-all cursor-pointer"
                 >
-                  Save
+                  {loading ? (
+                    <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <> Save Passage Question No {mainIndex + 1}</>
+                  )}
                 </button>
-                <button className="px-5 py-2 border border-blue-500 text-blue-500 rounded-md shadow hover:bg-blue-50 transition-all cursor-pointer">
-                  Save & Proceed
-                </button>
+
                 {questions.length > 1 && (
                   <button
                     onClick={() => deleteMainQuestion(mainIndex)}
@@ -160,7 +168,7 @@ export default function PassageQuestionBuilder({ parentId }) {
 
             {/* Passage and Points */}
             <div className="px-6 py-4">
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex  justify-between mb-6">
                 <div className="w-[80%]">
                   <label className="block font-medium text-gray-600 mb-2">
                     Passage
@@ -176,17 +184,15 @@ export default function PassageQuestionBuilder({ parentId }) {
                   />
                 </div>
                 <div>
-                  <label className="block font-medium text-gray-600 mb-2">
-                    Points
-                  </label>
                   <input
                     type="number"
                     placeholder="Points"
                     value={q.points}
+                    min="0"
                     onChange={(e) =>
                       updateField(mainIndex, "points", e.target.value)
                     }
-                    className="w-[100px] h-[50px] text-center border border-gray-300 rounded-lg shadow-sm px-3 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-300 transition-all duration-300"
+                    className="w-[100px] h-[50px] mt-10 text-center border border-gray-300 rounded-lg shadow-sm px-3 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-300 transition-all duration-300"
                   />
                 </div>
               </div>

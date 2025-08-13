@@ -3,17 +3,18 @@ import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { useDispatch } from "react-redux";
 import { createClozeQuestion } from "../redux/actions/clozeQuestion";
 import useLocalStorage from "../../utility/useLocalStorage";
+import { toast } from "react-toastify";
 function QuestionCard({ questionNumber, onDelete, showDelete, parentId }) {
   const [sentence, setSentence] = useState(
     "A quick brown fox jumped over a fence"
   );
   const [highlights, setHighlights] = useState([]);
-  const [points, setPoints] = useState(0);
+  const [points, setPoints] = useState();
   const [savedData, setSavedData] = useState(null);
   const pRef = useRef();
   const dispatch = useDispatch();
   const [profile] = useLocalStorage("profile", null);
-
+  const [loading, setLoading] = useState(false);
   const handleUnderline = () => {
     const selection = window.getSelection();
     const selectedText = selection.toString().trim();
@@ -83,6 +84,7 @@ function QuestionCard({ questionNumber, onDelete, showDelete, parentId }) {
 
   // On save, create the object per your format
   const handleSave = async () => {
+    setLoading(true);
     const data = {
       userID: profile?.result?._id,
       parentId: parentId,
@@ -97,6 +99,8 @@ function QuestionCard({ questionNumber, onDelete, showDelete, parentId }) {
     };
     try {
       await dispatch(createClozeQuestion(data));
+      setLoading(false);
+      toast.success("Question Added Successfully");
     } catch (error) {
       console.log(error);
     }
@@ -119,13 +123,15 @@ function QuestionCard({ questionNumber, onDelete, showDelete, parentId }) {
         <div className="flex gap-3">
           <button
             onClick={handleSave}
-            className="px-5 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition-all cursor-pointer"
+            className="px-5 py-2 border border-blue-500 text-blue-500 rounded-md shadow hover:bg-blue-50 transition-all cursor-pointer"
           >
-            Save
+            {loading ? (
+              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              <> Save Cloze Question No {questionNumber}</>
+            )}
           </button>
-          <button className="px-5 py-2 border border-blue-500 text-blue-500 rounded-md shadow hover:bg-blue-50 transition-all cursor-pointer">
-            Save & Proceed
-          </button>
+
           <AnimatePresence>
             {showDelete && (
               <motion.button
@@ -165,6 +171,7 @@ function QuestionCard({ questionNumber, onDelete, showDelete, parentId }) {
           <input
             type="number"
             placeholder="Points"
+            min="0"
             value={points}
             onChange={(e) => setPoints(Number(e.target.value))}
             className="w-[100px] h-[50px] text-center border border-gray-300 rounded-lg shadow-sm px-3 py-1 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-300 transition-all duration-300"

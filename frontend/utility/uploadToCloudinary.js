@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { TOAST } from "./constantToast";
 
 const cloudName = "dyphiefiy";
@@ -20,10 +21,10 @@ export const uploadImageToCloudinary = async (file) => {
     );
 
     const data = await response.json();
-    TOAST.CLOUD.SUCCESS_UPLOAD;
+    toast.success(TOAST.CLOUD.SUCCESS_UPLOAD);
     return data.secure_url;
   } catch (error) {
-    TOAST.CLOUD.ERROR_UPLOAD;
+    toast.error(TOAST.CLOUD.ERROR_UPLOAD);
     console.error("Error uploading image:", error);
     return null;
   }
