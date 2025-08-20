@@ -11,4 +11,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Call Render App API
-        run: curl -X GET https://test-app-server-pcz9.onrender.com/api/v1/test
+        run: curl -X GET https://dummy.com
+        # run: curl -X GET https://test-app-server-pcz9.onrender.com/api/v1/test
