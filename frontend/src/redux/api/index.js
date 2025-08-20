@@ -1,6 +1,6 @@
 import axios from "axios";
 const API = axios.create({
-  baseURL: "https://test-app-server-pcz9.onrender.com/api/v1",
+  baseURL: "https://test-application.up.railway.app/api/v1",
 });
 API.interceptors.request.use((req) => {
   if (localStorage.getItem("profile")) {
